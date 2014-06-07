@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="spring_annotation"
+  id="myeclipse.1402065634796"
+  context-root="/spring_annotation"
+  j2ee-spec="5.0"
+  archive="spring_annotation.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" 
+	xmlns="http://java.sun.com/xml/ns/j2ee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	
+	
+	
+	<!-- 1，注册一个sevlet ,用于接收所有的外部请求   Dispatcher Servlet组件-->
+	<servlet>
+		<servlet-name>test</servlet-name>
+		<!-- 当加载 DispatcherServlet类的时候，会加载配置文件，
+			默认到webinfo目录下查找配置文件[{servletname}-servlet.xml]
+		-->
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<!-- 系统启动时自动加载DispatcherServlet类，这样可以防止在第一次请求的 时候在加载，会影响第一次的响应速度 -->
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	
+	<!--,2，配置一个映射，哪些url需要汇总到哪些servlet（Dispatcher Servlet）,将请求发送到前端控制器，也就是把所有的请求纳入spring的管理范围内 -->
+	<servlet-mapping>
+	<!-- 将请求发送到上面定义的servlet上面 -->
+		<servlet-name>test</servlet-name>
+		<url-pattern>*.test</url-pattern>
+	</servlet-mapping>
+	
+	
+	
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+</web-app>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" 
+	xmlns="http://java.sun.com/xml/ns/javaee" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
+  
+  <servlet>
+  	<servlet-name>mvc</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  	<!-- 这是spring在加载时默认查找的一个参数，名字是固定的 -->
+  	<init-param>
+  		<param-name>contextConfigLocation</param-name>
+  		<!-- 在src下的所有的文件都会在运行的时候放到/web-inf/classes/目录下 -->
+  		<param-value>/WEB-INF/classes/spring/*.xml</param-value>
+  	</init-param>
+	<!-- 系统启动时自动加载DispatcherServlet类，这样可以防止在第一次请求的 时候在加载，会影响第一次的响应速度 -->
+	<load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <!--,2，配置一个映射，哪些url需要汇总到哪些servlet（Dispatcher Servlet）,将请求发送到前端控制器，也就是把所有的请求纳入spring的管理范围内 -->
+	<servlet-mapping>
+	<!-- 将请求发送到上面定义的servlet上面 -->
+		<servlet-name>mvc</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+</web-app>

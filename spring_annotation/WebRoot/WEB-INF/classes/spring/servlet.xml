@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:mvc="http://www.springframework.org/schema/mvc"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                     http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                     http://www.springframework.org/schema/aop
+                     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                     http://www.springframework.org/schema/mvc
+                     http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+                     
+       <!-- 开启组件扫描 -->            
+       <context:component-scan base-package="hust"/>
+       
+       <!-- 基于resource的视图解析器，它在简单的基于url的解析的基础上加入了对jsp和jstl的支持 -->
+        <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        	<!-- 其实在InternalResourceViewResolve中有一个默认的view类，就是jstl类 -->
+        	<property name="viewClass" value = "org.springframework.web.servlet.view.JstlView"></property>
+        	<!-- 指定请求的前缀 -->
+    		<property name="prefix" value = "/WEB-INF/pages/"></property>
+        	<!-- 指定请求的后缀 -->
+    		<property name="suffix" value = ".jsp"></property>
+        </bean>
+        
+        
+        <!-- 配置拦截器 -->
+        <mvc:interceptors>
+        	<!-- 这里可以设置多个拦截器，形成一个拦截器链 -->
+        	<mvc:interceptor>
+        		<!-- 对/下的所有请求执行拦截器 -->
+        		<mvc:mapping path = "/*"/>
+        		<bean class = "hust.web.MyInterceptor"/>
+        	</mvc:interceptor>
+        	<!-- 
+        	<mvc:interceptor>
+        		<mvc:mapping path = "/user/*"/>
+        		<bean class = "hust.web.MyInterceptor"/>
+        	</mvc:interceptor>
+        	 -->
+        </mvc:interceptors>
+        
+        <!-- 配置加载资源文件 id必须是sourceMessage，框架在启动的时候会找这个bean进行加载-->       
+        <bean id = "sourceMessage" class = "org.springframework.context.support.ResourceBundleMessageSource">
+        	<!-- 加载以mess为base的资源文件 -->
+        	<property name="basename" value="mess"/>
+        </bean>
+</beans>

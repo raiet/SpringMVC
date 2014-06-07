@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:aop="http://www.springframework.org/schema/aop"
+             xmlns:tx="http://www.springframework.org/schema/tx"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                     http://www.springframework.org/schema/context
+                     http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                     http://www.springframework.org/schema/aop
+                     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                     http://www.springframework.org/schema/tx
+                     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+                   
+   <!-- 4,Handler Mapping组件，
+   
+   
+   完成具体的请求到具体的controller的映射 -->
+   <!-- 当加载这个配置文件的时候，会首先实例化以HandlerMapping结尾的类，如下面的SimpleUrlHandlerMapping类，
+   然后在它里面查找映射关系 -->
+   <!-- SimpleUrlHandlerMapping是基于url的控制器 -->
+     <bean class = "org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+     	<!-- 映射属性 -->
+     	<property name = "mappings">
+     		<!-- 映射键值对 -->
+     		<props>
+     			<!-- 当请求时start.test时，将控制交由startController这个controller处理 -->
+     			<prop key="start.test">startController</prop>
+     			<!--  -->
+     			<prop key="login.test">loginController</prop>
+     			
+     			<prop key="logout.test">logoutController</prop>
+     			<!--<prop key="addUser.test">addUserController</prop>-->
+     			<!--  <prop key="addUserAction.test">addUserActionController1</prop>  -->
+     			<prop key="addUserAction.test">addUserActionController2</prop>
+     			<!-- 这里使用了一个formcontroller，这个controller很特殊-->
+     			<!--  <prop key="addUser.test">addUserActionController3</prop>  -->
+     			<prop key="toAdd.test">addUserActionController4</prop>
+     			<prop key="addUserAction.test">addUserActionController4</prop>
+     		</props>
+     	</property>
+     </bean>
+     <!--  基于类名的handlermapping，比如请求abc.test，则mapping会自动映射到AbcController的控制器，可以简化映射的配置
+     <bean class = "org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"></bean>
+     
+      基于beanname的映射，上面是基于class的映射
+     <bean class = "org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"></bean>
+    -->
+     
+     <!-- 这个controller实现直接映射（参数化的视图控制器），也就是说只是返回一个逻辑视图名“login”（view = “login”），
+     然后由View Resolver解析为login.jsp。不需要实现自己的controller，spring框架自己提供了 -->
+     <bean id = "loginController" class = "org.springframework.web.servlet.mvc.ParameterizableViewController">
+     	<property name="viewName" value = "login"></property>
+     </bean>
+    
+    
+     <!-- 这个controller是一个更加简化的controller，基于文件名的视图控制器，它直接根据请求的文件名，来返回视图的逻辑名，
+     逻辑名就是请求文件名，如这里如果请求logout.test，则它返回一个“logout” ，之后再经由view resolver解析为logout.jsp-->
+     <bean id = "logoutController" class = "org.springframework.web.servlet.mvc.UrlFilenameViewController"></bean>
+    <!-- 请求addUser.test，这里会直接将请求的文件名，作为逻辑视图名返回，注意这里返回的是请求的文件名，而不是这里的控制器名的前半部分 -->
+    <bean id = "addUserController" class = "org.springframework.web.servlet.mvc.UrlFilenameViewController"></bean>
+    
+    <!-- 3，实现和注册我们的controller，controller组件 -->                 
+	<bean id= "startController" class = "hust.StartController"></bean>
+	
+	<!-- 使用继承自AbstractController的控制器 -->
+	<bean id = "addUserActionController1" class = "hust.AddUserActionController1"></bean>
+	
+	<!-- 配置自定义属性编辑器，加入到一个map里面去,map的key是要转换的类型的全名称,value是我们自己写的转换器 
+	这种方法有点问题，暂时还没有解决
+	<bean id="customEditorConfigurer" class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+		<property name="customEditors">
+			<map>
+				<entry key="java.util.Date">
+					<bean class="hust.MyEditor">
+						
+						<property name="pattern" value="yyyy-MM-dd"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	-->
+	<!-- 使用继承自AbstractCommandController的控制器  这里还涉及了数据绑定-->
+	<bean id = "addUserActionController2" class = "hust.AddUserActionController2">
+		<!-- 使用反射机制，自动注入时需要制定注入的类的类型 -->
+		<property name="commandClass" value = "hust.User"></property>
+		
+	</bean>
+	<!-- SimpleFormController是AbstractFormController的具体实现，
+     允许你在配置文件里通过successView和formView属性来配置成功视图（表单成功提交后要转向的页面）和表单视图（显示表单的页面） 
+     它可以处理表单流程
+     -->
+	<bean id = "addUserActionController3" class = "hust.AddUserActionController3">
+		<!-- 使用反射机制，自动注入时需要制定注入的类的类型 -->
+		<property name="commandClass" value = "hust.User"></property>
+		<!-- 当第一次以get方法请求页面的时候，他不会执行onSubmit方法，但是referenceData会被执行，返回视图需要的数据，同时返回一个addUser的逻辑视图
+			当提交表单的时候，还是会到这个controller，但是这是是以post方式提交的，所以它只会执行onSubmit方法
+			也就是说对于同一个请求他会根据不同的请求方式，给出不同的响应方式
+		 -->
+		<property name="formView" value = "addUser"></property>
+		<property name="successView" value = "addUserSuccess"></property>
+		
+	</bean>
+	
+	<bean id = "addUserActionController4" class = "hust.AddUserActionController4">
+		
+		<!-- 方法名解析器 -->
+		<property name="methodNameResolver">
+			<!-- 根据请求的路劲来解析响应的方法调用 -->
+			<bean class = "org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"></bean>
+		</property>
+	</bean>
+	
+	
+	<bean id = "addUserServController" class = "hust.UserController">
+		<!-- 使用反射机制，自动注入 -->
+		<property name="commandClass" value = "hust.User"></property>
+	</bean>
+	
+	<!-- resolve是一种策略,完成逻辑名称（字符串）到view真实视图的映射，真正的处理是由 viewclass来完成的-->
+    <!-- 基于url的视图解析器 ViewResolve & View 组件-->          
+    <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    	<!-- Resolver和view 要结合使用，这里试试使用jsp作为视图层，jstl在jsp显示的时候可以完成国际化的处理-->
+    	<!-- 在我们的例子中，viewclass 并没有做什么事情， -->
+    	<property name="viewClass" value = "org.springframework.web.servlet.view.JstlView"></property>
+    	<!-- 指定请求的前缀 -->
+    	<property name="prefix" value = "/WEB-INF/jsp/"></property>
+    	<!-- 指定请求的后缀 -->
+    	<property name="suffix" value = ".jsp"></property>
+    	
+    	 <!-- 对于名字为“start”的逻辑视图，按照上面的配置，会进行拼装成/WEB-INF/jsp/start.jsp,
+    	 在spring框架内部会使用request.forward()方法实现跳转 -->
+    </bean>
+    
+   
+</beans>
